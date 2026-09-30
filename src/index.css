@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-cinzel: 'Cinzel', serif;
+    --font-devanagari: 'Noto Serif Devanagari', serif;
+    --font-rozha: 'Rozha One', serif;
+    --font-yatra: 'Yatra One', cursive;
+    --font-sans: 'Plus Jakarta Sans', sans-serif;
+  }
+}
+
+.font-cinzel {
+  font-family: var(--font-cinzel);
+}
+
+.font-devanagari {
+  font-family: var(--font-devanagari);
+}
+
+.font-rozha {
+  font-family: var(--font-rozha);
+}
+
+.font-yatra {
+  font-family: var(--font-yatra);
+}
+
+/* Talapatra (Palm-Leaf) manuscript texture styling */
+.parchment-bg {
+  background-color: #fbf5e8;
+  background-image: 
+    radial-gradient(ellipse at 50% 50%, rgba(254, 249, 238, 0.8) 0%, rgba(239, 222, 189, 0.7) 70%, rgba(209, 185, 145, 0.6) 100%),
+    repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(160, 115, 60, 0.04) 31px, rgba(160, 115, 60, 0.04) 32px),
+    repeating-linear-gradient(90deg, transparent, transparent 120px, rgba(160, 115, 60, 0.02) 120px, rgba(160, 115, 60, 0.02) 121px);
+}
+
+.parchment-border {
+  border: 2px solid #8e5828;
+  box-shadow: 
+    inset 0 0 16px rgba(120, 60, 20, 0.15),
+    0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.parchment-leaf-edge {
+  box-shadow: 
+    inset 0 4px 10px rgba(78, 40, 15, 0.25),
+    inset 0 -4px 10px rgba(78, 40, 15, 0.25),
+    0 10px 25px -5px rgba(0, 0, 0, 0.6);
+}
+
+/* Palm leaf binding holes with aged burnished brass grommets */
+.palm-leaf-hole {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #1a1209 40%, #583313 70%, #996225 100%);
+  border: 2px solid #3c2009;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 0 2px rgba(190, 140, 60, 0.3);
+}
+
+/* Custom scrollbar for horizontal manuscript scroll */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2a1b10;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #734522;
+  border-radius: 4px;
+  border: 1px solid #a36b35;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #945d31;
+}

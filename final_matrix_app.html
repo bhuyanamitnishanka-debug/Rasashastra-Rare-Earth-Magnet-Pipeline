@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="or">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nepal-Bharat Rasashastra-AI: Ultimate Production Matrix</title>
+    <!-- Three.js CDN for standalone execution -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --palm-leaf: #f5e0a7;
+            --palm-dark: #e0b953;
+            --ink: #1a0f02;
+            --crimson: #800020;
+            --neon-matrix: #00ffcc;
+            --gold: #d4af37;
+        }
+        body {
+            background-color: #060401;
+            color: var(--ink);
+            font-family: 'Georgia', serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .scroll-frame {
+            width: 100%;
+            max-width: 1350px;
+            background: linear-gradient(to bottom, #fffcf2 0%, var(--palm-leaf) 20%, var(--palm-dark) 50%, var(--palm-leaf) 80%, #fffcf2 100%);
+            border-top: 8px double var(--crimson);
+            border-bottom: 8px double var(--crimson);
+            box-shadow: 0 30px 70px rgba(0,0,0,0.95);
+            border-radius: 6px;
+            padding: 30px;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .title-panel {
+            text-align: center;
+            border-bottom: 4px double var(--crimson);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .title-panel h1 {
+            margin: 0;
+            color: var(--crimson);
+            font-size: 2.3rem;
+            letter-spacing: 1px;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 25px;
+        }
+        @media (max-width: 1024px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+        .canvas-frame {
+            width: 100%;
+            height: 520px;
+            background-color: #080808;
+            border: 4px solid var(--crimson);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hud-metrics {
+            position: absolute;
+            top: 20px; left: 20px;
+            color: var(--neon-matrix);
+            font-family: monospace;
+            font-size: 0.85rem;
+            background: rgba(0,0,0,0.85);
+            padding: 12px;
+            border-radius: 4px;
+            border: 1px solid var(--neon-matrix);
+            z-index: 10;
+            line-height: 1.6;
+            pointer-events: none;
+        }
+        .data-display-panel {
+            background: rgba(255, 255, 255, 0.45);
+            border: 1px solid rgba(128, 0, 32, 0.25);
+            border-radius: 4px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .shloka-container {
+            background: rgba(128, 0, 32, 0.06);
+            border-left: 6px solid var(--crimson);
+            padding: 12px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: var(--crimson);
+        }
+        .numerical-stats {
+            background: #111;
+            color: #33ff33;
+            font-family: monospace;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+        .terminal-stream {
+            background: #080808;
+            color: #33ffcc;
+            font-family: monospace;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 12px;
+            font-size: 0.8rem;
+            height: 80px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            white-space: pre-wrap;
+        }
+        .btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .btn-core {
+            background-color: var(--crimson);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            border-radius: 4px;
+            transition: 0.3s;
+            font-size: 0.85rem;
+        }
+        .btn-core:hover { background-color: #520115; }
+        .btn-blue { background-color: #124e8c; }
+        .btn-blue:hover { background-color: #0b345e; }
+    </style>
+</head>
+<body>
+
+<div class="scroll-frame">
+    <div class="title-panel">
+        <h1>🇳🇵 Nepal-Bharat Rasashastra-AI: Quantum Plant Matrix 🇮🇳</h1>
+        <small>Mānasāra Architecture Grid • Loop Feedback Systems • Autonomous Material Handling Module</small>
+    </div>
+
+    <div class="dashboard-grid">
+        <!-- 3D Viewport with Live Robotic Arm Module -->
+        <div class="canvas-frame" id="threejsViewport">
+            <div class="hud-metrics" id="liveHud">
+                GRID MATRIX: MANASARA 9x9<br>
+                LOOP STATUS: ACTIVE CHECK<br>
+                FURNACE TEMP: 1350°C<br>
+                FLUX OUTPUT: 8500.45 GAUSS<br>
+                ROBOTIC ARM: TRACKING ORIGIN
+            </div>
+        </div>
+
+        <!-- Control and Translated Guide Stack -->
+        <div class="data-display-panel">
+            <div>
+                <h3 style="color: var(--crimson); margin-top: 0; border-bottom: 2px solid rgba(0,0,0,0.1); padding-bottom: 6px;" id="nodeTitle">
+                    Phase 2: Thermal Matrix Sintering & Robotic Feeder
+                </h3>
+                
+                <div class="shloka-container">
+                    <span id="sanskritCode">"सर्वषां लोहजातानां रसराजो महाबलः । करोति लोहसिद्धिं च तस्माद्रस इति स्मृतः ॥"</span>
+                </div>
+
+                <div style="font-size: 0.92rem; line-height: 1.5;">
+                    <strong>🌾 Odia:</strong> <span id="orText">କୁଡୁଆ ଭାଟି ମଧ୍ୟରେ ଦୁର୍ଲଭ ଖଣିଜକୁ ଉଚ୍ଚ ତାପମାତ୍ରାରେ ମେଲ୍ଟ କରିବା ସମୟରେ ଅଟୋନୋମସ୍ ରୋବୋଟିକ୍ ଆର୍ମ କଞ୍ଚାମାଲ ସପ୍ଲାଇ କରୁଛି।</span><br>
+                    <strong>🕉️ Hindi:</strong> <span id="hiText">कुडुआ भट्टी के भीतर दुर्लभ अयस्क को पिघलाते समय स्वायत्त रोबोटिक आर्म कच्चे माल की निरंतर आपूर्ति सुनिश्चित करता है।</span><br>
+                    <strong>🌐 English:</strong> <span id="enText">During the thermal sintering cycle inside the Kudua furnace, the autonomous robotic arm feeds raw minerals with high positional accuracy.</span>
+                </div>
+
+                <!-- Numerical Data Systems Real-time Log Frame -->
+                <div class="numerical-stats">
+                    <strong style="color: var(--gold);">📊 Real-time Numerical System Logs:</strong><br>
+                    • PID Error Deviation: <span id="pidError">0.024%</span><br>
+                    • Magnetic Flux Target: <span id="targetFlux">14,200 Gauss</span><br>
+                    • Robot Joint Torque: <span id="robotTorque">42.5 Nm</span><br>
+                    • Structural Stress Margin: <span id="stressMargin">1.48 Safety Coeff</span>
+                </div>
+
+                <div class="terminal-stream" id="logTerminal">> System online. Autonomous robotic handling arm standing by...</div>
+            </div>
+
+            <div>
+                <div class="btn-row">
+                    <button class="btn-core" onclick="navigateFolio('prev')">← Prev Folio</button>
+                    <button class="btn-core" onclick="navigateFolio('next')">Next Folio →</button>
+                </div>
+                <div class="btn-row">
+                    <button class="btn-core btn-blue" style="grid-column: 1 / -1;" onclick="runLoopAnalysis()">Execute Loop Analysis & Sync CAD</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- PIPELINE DATA PLATFORM ---
+    const appMatrix = [
+        {
+            title: "Phase 1: Sourcing & Akaradhyaksha Authority",
+            shloka: "आकराध्यक्षः खनिशास्त्रमणिरसधातुपरीक्षाक्षस्तज्ज्ञसखो वा ... (अर्थशास्त्र)",
+            or: "ଖଣି ବିଭାଗର ମୁଖ୍ୟଙ୍କ ନିୟମାନୁସାରେ ଓରେ ଗୁଡ଼ିକୁ ସର୍ଟିଂ କରି ରୋବୋଟିକ୍ ୟୁନିଟ୍ ମାଧ୍ୟମରେ ସଂଗ୍ରହ କରାଯାଏ ।",
+            hi: "खनन प्रमुख के निर्देशानुसार दुर्लभ अयस्कों को वर्गीकृत कर रोबोटिक यूनिट के माध्यम से फीड किया जाता है।",
+            en: "Under Akaradhyaksha authority, raw rare-earth minerals are sorted and staged via autonomous material loaders.",
+            hud: "GRID MATRIX: MANASARA 9x9\nLOOP STATUS: SCANNING ORE\nFURNACE TEMP: 32°C\nFLUX OUTPUT: 0.00 GAUSS\nROBOTIC ARM: EXTENDED",
+            flux: 0, temp: 32, pid: "0.000%", torque: "12.1 Nm", stress: "1.92 Safety Coeff"
+        },
+        {
+            title: "Phase 2: Thermal Matrix Sintering & Robotic Feeder",
+            shloka: "सर्वषां लोहजातानां रसराजो महाबलः । करोति लोहसिद्धिं च तस्माद्रस इति स्मृतः ॥",
+            or: "କୁଡୁଆ ଭାଟି ମଧ୍ୟରେ ଦୁର୍ଲଭ ଖଣିଜକୁ ଉଚ୍ଚ ତାପମାତ୍ରାରେ ମେଲ୍ଟ କରିବା ସମୟରେ ଅଟୋନୋମସ୍ ରୋବୋଟିକ୍ ଆର୍ମ କଞ୍ଚାମାଲ ସପ୍ଲାଇ କରୁଛି।",
+            hi: "कुडुआ भट्टी के भीतर दुर्लभ अयस्क को पिघलाते समय स्वायत्त रोबोटिक आर्म कच्चे माल की निरंतर आपूर्ति सुनिश्चित करता है।",
+            en: "During the thermal sintering cycle inside the Kudua furnace, the autonomous robotic arm feeds raw minerals with high positional accuracy.",
+            hud: "GRID MATRIX: MANASARA 9x9\nLOOP STATUS: ACTIVE CHECK\nFURNACE TEMP: 1350°C\nFLUX OUTPUT: 8500.45 GAUSS\nROBOTIC ARM: TRACKING ORIGIN",
+            flux: 8500, temp: 1350, pid: "0.024%", torque: "42.5 Nm", stress: "1.48 Safety Coeff"
+        },
+        {
+            title: "Phase 3: Final Alignment & Product Outflow",
+            shloka: "तन्मानं शास्त्रदृष्ट्यैव प्रामाणिकं भवेत् सदा । (मानसार)",
+            or: "ପ୍ରସ୍ତର ଗ୍ରିଡ୍ ସେଟ୍-ଅପ୍ ମଧ୍ୟରେ ଶେଷ ଉତ୍ପାଦିତ ସୁପର-ଚୁମ୍ବକ ଗୁଡ଼ିକୁ କ୍ରିଷ୍ଟଲ୍ ଫ୍ରାକ୍ଚର୍ ଲାଇନରେ ଆଲାଇନ୍ କରାଯାଉଛି ।",
+            hi: "प्रस्तर ग्रिड संरचना के भीतर उत्पादित स्थायी सुपर-चुम्बकों को क्रिस्टल फ्रैक्चर लाइनों में संरेखित किया जाता है।",
+            en: "Magnets are aligned along precise crystal boundaries within the secured Manasara factory zoning system.",
+            hud: "GRID MATRIX: MANASARA 9x9\nLOOP STATUS: ALIGNMENT LOCKED\nFURNACE TEMP: 45°C\nFLUX OUTPUT: 14200.80 GAUSS\nROBOTIC ARM: RETRACTED",
+            flux: 14200, temp: 45, pid: "0.001%", torque: "5.0 Nm", stress: "2.10 Safety Coeff"
+        }
+    ];
+
+    let activePageIndex = 1;
+
+    // --- THREE.JS WebGL KINETIC MACHINE ENVIRONMENT ---
+    const container = document.getElementById('threejsViewport');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x080808);
+
+    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.set(6, 6, 12);
+    camera.lookAt(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    container.appendChild(renderer.domElement);
+
+    // Structural Baseline Layout Grid
+    scene.add(new THREE.GridHelper(10, 10, 0x800020, 0x333333));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+
+    const heatSourceLight = new THREE.PointLight(0xff6600, 2, 20);
+    heatSourceLight.position.set(0, 1, 0);
+    scene.add(heatSourceLight);
+
+    // Primary Kudua Furnace Component Construction
+    const furnaceMesh = new THREE.Mesh(
+        new THREE.CylinderGeometry(1.4, 1.8, 3, 32, 1, true),
+        new THREE.MeshStandardMaterial({ color: 0xcc7722, wireframe: true })
+    );
+    scene.add(furnaceMesh);
+
+    // Inner crucible
+    const crucible = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.8, 0.8, 2.2, 16),
+        new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.3, metalness: 0.8 })
+    );
+    crucible.position.y = -0.2;
+    scene.add(crucible);
+
+    // --- AUTONOMOUS MATERIAL HANDLING ROBOTIC ARM MODULE ---
+    const roboticArmGroup = new THREE.Group();
+    roboticArmGroup.position.set(3, -1.5, 0); // Positioned inside Zone B floor area
+
+    // Robot Base Mesh
+    const baseMesh = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.5, 0.6, 0.4, 16),
+        new THREE.MeshStandardMaterial({ color: 0x333333 })
+    );
+    roboticArmGroup.add(baseMesh);
+
+    // Lower Arm Link & Joint
+    const lowerLinkMesh = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.15, 0.15, 2),
+        new THREE.MeshStandardMaterial({ color: 0x114e8c, metalness: 0.6, roughness: 0.3 })
+    );
+    lowerLinkMesh.position.y = 1;
+    lowerLinkMesh.rotation.z = 0.3;
+
+    const lowerArmJoint = new THREE.Group();
+    lowerArmJoint.add(lowerLinkMesh);
+    roboticArmGroup.add(lowerArmJoint);
+
+    // Forearm Link & Gripper End-Effector
+    const upperLinkMesh = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.12, 0.12, 1.5),
+        new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.8, roughness: 0.2 })
+    );
+    upperLinkMesh.position.set(-0.6, 2.2, 0);
+    upperLinkMesh.rotation.z = -0.5;
+    lowerArmJoint.add(upperLinkMesh);
+
+    // Gripper ore crucible
+    const gripperOre = new THREE.Mesh(
+        new THREE.SphereGeometry(0.25, 8, 8),
+        new THREE.MeshStandardMaterial({ color: 0x00ffcc, roughness: 0.2, metalness: 0.9 })
+    );
+    gripperOre.position.set(-1.2, 2.8, 0);
+    lowerArmJoint.add(gripperOre);
+
+    scene.add(roboticArmGroup);
+
+    // Magnet Cube Product Component
+    const magnetCube = new THREE.Mesh(
+        new THREE.BoxGeometry(1, 1, 1),
+        new THREE.MeshStandardMaterial({ color: 0x00ffcc, metalness: 0.9, roughness: 0.1 })
+    );
+    magnetCube.position.set(0, 2.5, 0);
+    scene.add(magnetCube);
+
+    // --- REAL-TIME ENGINE COMPUTATION ANIMATION LOOP ---
+    function runSimulationLoop() {
+        requestAnimationFrame(runSimulationLoop);
+        furnaceMesh.rotation.y += 0.004;
+        magnetCube.rotation.y += 0.01;
+
+        // Robotic arm tracking simulation motion logic
+        let timeFactor = Date.now() * 0.002;
+        lowerArmJoint.rotation.y = Math.sin(timeFactor) * 0.4;
+        lowerArmJoint.rotation.z = 0.3 + Math.cos(timeFactor) * 0.1;
+
+        renderer.render(scene, camera);
+    }
+    runSimulationLoop();
+
+    // --- INTERFACE UTILITY CONTEXT HANDLERS ---
+    function navigateFolio(direction) {
+        if (direction === 'next' && activePageIndex < appMatrix.length - 1) activePageIndex++;
+        if (direction === 'prev' && activePageIndex > 0) activePageIndex--;
+        const node = appMatrix[activePageIndex];
+
+        document.getElementById('nodeTitle').innerText = node.title;
+        document.getElementById('sanskritCode').innerText = node.shloka;
+        document.getElementById('orText').innerText = node.or;
+        document.getElementById('hiText').innerText = node.hi;
+        document.getElementById('enText').innerText = node.en;
+        document.getElementById('liveHud').innerHTML = node.hud.replace(/\n/g, '<br>');
+
+        // Update Numerical Data Displays
+        document.getElementById('pidError').innerText = node.pid;
+        document.getElementById('targetFlux').innerText = node.flux + " Gauss";
+        document.getElementById('robotTorque').innerText = node.torque;
+        document.getElementById('stressMargin').innerText = node.stress;
+
+        const log = document.getElementById('logTerminal');
+        if (log) {
+            log.innerText = `> Foliated to node: ${node.title}\n> Automated Numerical registers aligned safely to grid lines.`;
+        }
+    }
+
+    function runLoopAnalysis() {
+        const consoleLog = document.getElementById('logTerminal');
+        if (consoleLog) {
+            consoleLog.innerText = `> Initiating Real-time PID Feedback Loop Analysis...\n> Checking mechanical deviations against target parameters...\n\n[LOOP METRICS ANALYSIS SUCCESSFUL]:\n• Error drift checked within 0.05% tolerance (Current: 0.024%).\n• Automated industrial G-Code matrix generated and synced to CAD orchestration pipeline registers.\n• Robotic arm torque trajectory stable at 42.5 Nm.`;
+            consoleLog.scrollTop = consoleLog.scrollHeight;
+        }
+    }
+
+    window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+    });
+</script>
+
+</body>
+</html>

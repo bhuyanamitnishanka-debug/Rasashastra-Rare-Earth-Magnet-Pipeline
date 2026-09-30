@@ -1,0 +1,6 @@
+{
+  "name": "Rasashastra Rare-Earth Magnet Pipeline",
+  "description": "An engineering graphic novel and interactive 3D simulation reverse-engineering Rasaratna Samuchaya furnaces, Manasara architectural grids, and Arthashastra industrial zoning for rare-earth magnet manufacturing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

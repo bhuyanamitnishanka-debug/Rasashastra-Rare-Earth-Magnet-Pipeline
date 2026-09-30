@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="or">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Nepal-Bharat Rasashastra-AI Matrix</title>
+    <!-- Three.js CDN for standalone execution -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --palm-leaf-base: #f9e7b9;
+            --palm-leaf-dark: #e8c674;
+            --antique-ink: #1f1102;
+            --crimson-royal: #7a001e;
+            --gold-foil: #d4af37;
+            --neon-flux: #00ffcc;
+            --terminal-dark: #0a0a0a;
+        }
+
+        body {
+            background-color: #050301;
+            color: var(--antique-ink);
+            font-family: 'Georgia', serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* Deluxe Double-Stitched Palm-Leaf Manuscript Frame */
+        .manuscript-container {
+            width: 100%;
+            max-width: 1300px;
+            background: linear-gradient(to bottom, #fffcf0 0%, var(--palm-leaf-base) 15%, var(--palm-leaf-dark) 50%, var(--palm-leaf-base) 85%, #fffcf0 100%);
+            border-top: 8px double var(--crimson-royal);
+            border-bottom: 8px double var(--crimson-royal);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.95);
+            border-radius: 8px;
+            padding: 35px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* Traditional String-Binding Holes characteristic of Himalayan Palm-Leaf Scrolls */
+        .binding-hole {
+            position: absolute;
+            top: 50%;
+            width: 24px;
+            height: 24px;
+            background: #120700;
+            border-radius: 50%;
+            border: 3px solid var(--crimson-royal);
+            box-shadow: inset 0 3px 5px rgba(0,0,0,0.8);
+            transform: translateY(-50%);
+            z-index: 5;
+        }
+        .hole-left { left: 40px; }
+        .hole-right { right: 40px; }
+
+        .app-title-block {
+            text-align: center;
+            border-bottom: 4px double var(--crimson-royal);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .app-title-block h1 {
+            margin: 0;
+            font-size: 2.4rem;
+            color: var(--crimson-royal);
+            letter-spacing: 2px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.15);
+        }
+
+        .grid-core-layout {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-core-layout { grid-template-columns: 1fr; }
+        }
+
+        /* 3D WebGL Visualization Viewport */
+        .canvas-wrapper {
+            width: 100%;
+            height: 480px;
+            background-color: #080808;
+            border: 4px solid var(--crimson-royal);
+            border-radius: 4px;
+            position: relative;
+            box-shadow: inset 0 0 30px rgba(0,0,0,1);
+            overflow: hidden;
+        }
+
+        .hud-overlay-metrics {
+            position: absolute;
+            top: 15px; left: 15px;
+            color: var(--neon-flux);
+            font-family: monospace;
+            font-size: 0.85rem;
+            background: rgba(0,0,0,0.85);
+            padding: 12px;
+            border-radius: 4px;
+            border: 1px solid var(--neon-flux);
+            pointer-events: none;
+            z-index: 10;
+            line-height: 1.5;
+        }
+
+        /* Live Vector Graph Viewport */
+        .graph-panel {
+            width: 100%;
+            height: 170px;
+            background-color: #0d0d0d;
+            border: 2px solid var(--crimson-royal);
+            border-radius: 4px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .graph-label {
+            position: absolute;
+            top: 5px; right: 10px;
+            color: #ffaa00;
+            font-family: monospace;
+            font-size: 0.75rem;
+            z-index: 2;
+        }
+
+        /* Content Text Stack */
+        .text-guide-stack {
+            background: rgba(255, 255, 255, 0.45);
+            border: 1px solid rgba(122, 0, 30, 0.25);
+            border-radius: 4px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .sacred-shloka-box {
+            background: rgba(122, 0, 30, 0.07);
+            border-left: 6px solid var(--crimson-royal);
+            padding: 15px;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 20px;
+        }
+
+        .shloka-display {
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: var(--crimson-royal);
+            line-height: 1.4;
+            display: block;
+        }
+
+        .translation-container h4 {
+            margin: 12px 0 4px 0;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: #333;
+            letter-spacing: 1px;
+        }
+        .translation-container p {
+            margin: 0 0 12px 0;
+            font-size: 0.95rem;
+            line-height: 1.45;
+        }
+
+        .control-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .btn-action {
+            background-color: var(--crimson-royal);
+            color: white;
+            border: 2px solid transparent;
+            padding: 14px 18px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        .btn-action:hover {
+            background-color: #4d0012;
+            border-color: var(--gold-foil);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .btn-alt { background-color: #12355b; }
+        .btn-alt:hover { background-color: #0b233d; }
+        .btn-gold { background-color: #966907; }
+        .btn-gold:hover { background-color: #6e4d03; }
+
+        /* Realtime Machine Status Output Frame */
+        .terminal-stream {
+            background-color: var(--terminal-dark);
+            color: #33ff33;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 15px;
+            border-radius: 4px;
+            border: 2px solid #222;
+            height: 130px;
+            overflow-y: auto;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+
+<div class="manuscript-container">
+    <!-- Palm leaf decorative binding holes representing authentic Thyasaphu artifacts -->
+    <div class="binding-hole hole-left"></div>
+    <div class="binding-hole hole-right"></div>
+
+    <div class="app-title-block">
+        <h1>🇳🇵 Nepal-Bharat Rasashastra-AI: Sintering Platform 🇮🇳</h1>
+        <small>Interactive Graphic Novel Manual • Live WebGL CAD Simulation Framework • Arthashastra Infrastructure Core</small>
+    </div>
+
+    <div class="grid-core-layout">
+        <!-- Structural Graphic Elements Display Column -->
+        <div>
+            <div class="canvas-wrapper" id="webglFrame">
+                <div class="hud-overlay-metrics" id="hudPanel">
+                    NODE: SYSTEM INITIALIZING...<br>
+                    STRUCTURAL GRID: MANASARA 9x9<br>
+                    FURNACE MATRIX: TEMP STABLE<br>
+                    MAGNETIC FLUX: 0.00 GAUSS
+                </div>
+            </div>
+            
+            <!-- Live Vector Sintering Plotter Graph -->
+            <div class="graph-panel">
+                <div class="graph-label">Realtime Flux Density Plotter (Gauss / Sintering Temp)</div>
+                <canvas id="vectorGraphCanvas" style="width: 100%; height: 100%; display: block;"></canvas>
+            </div>
+        </div>
+
+        <!-- Sanskrit Treatise Manual Control Column -->
+        <div class="text-guide-stack">
+            <div>
+                <h3 style="color: var(--crimson-royal); margin-top: 0; border-bottom: 2px solid rgba(122,0,30,0.15); padding-bottom: 8px;" id="stageTitle">
+                    Phase 1: Smelting Infrastructure & Authority
+                </h3>
+                
+                <div class="sacred-shloka-box">
+                    <span class="shloka-display" id="sanskritSource">
+                        "आकराध्यक्षः खनिशास्त्रमणिरसधातुपरीक्षाक्षस्तज्ज्ञसखो वा ... कर्मान्तं कारयेत् ॥"
+                    </span>
+                </div>
+
+                <div class="translation-container">
+                    <h4>🌐 English Translation</h4>
+                    <p id="engText">The Master Superintendent of Mines (Akaradhyaksha) manages the geological ore extraction pipelines and metallurgic facilities alongside engineering experts.</p>
+                    
+                    <h4>🕉️ Hindi Translation</h4>
+                    <p id="hinText">खदान प्रमुख (आकराध्यक्ष) को भूविज्ञान और धातुकर्म के विशेषज्ञों के साथ मिलकर ही विनिर्माण कारखानों को स्थापित और संचालित करना चाहिए।</p>
+                    
+                    <h4>🌾 Odia Translation</h4>
+                    <p id="oriText">ଖଣି ବିଭାଗର ମୁଖ୍ୟ (ଆକରାଧ୍ୟକ୍ଷ) ଭୂବିଜ୍ଞାନ ଓ ଧାତୁ ଶୋଧନ ବିଶେଷଜ୍ଞମାନଙ୍କ ସହିତ ମିଳିତ ହୋଇ ଶିଳ୍ପ କାରଖାନା ପ୍ରତିଷ୍ଠା ଓ ପରିଚାଳନା କରିବା ଆବଶ୍ୟକ।</p>
+                </div>
+            </div>
+
+            <div>
+                <div class="control-row">
+                    <button class="btn-action" onclick="audioEngine.init(); handlePipelineNavigation('prev')">← Prev Page</button>
+                    <button class="btn-action" onclick="audioEngine.init(); handlePipelineNavigation('next')">Next Page →</button>
+                </div>
+                <div class="control-row">
+                    <button class="btn-action btn-alt" onclick="audioEngine.init(); triggerExplodedToggle()">Toggle Exploded View</button>
+                    <button class="btn-action btn-gold" onclick="audioEngine.init(); buildLiveGCode()">Compile Plant G-Code</button>
+                </div>
+                <div class="terminal-stream" id="logTerminal">> System online. Select a manuscript folio page to execute structural compilation logic...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// --- PIPELINE TEXTUAL DATA STORAGE UNIT ---
+const manualPages = [
+    {
+        title: "Phase 1: Smelting Infrastructure & Authority",
+        shloka: "आकराध्यक्षः खनिशास्त्रमणिरसधातुपरीक्षाक्षस्तज्ज्ञसखो वा ... कर्मान्तं कारयेत् ॥ (अर्थशास्त्र २.१२.१)",
+        eng: "The Master Superintendent of Mines (Akaradhyaksha) manages the geological Neodymium ore extraction pipelines and metallurgic facilities alongside engineering experts.",
+        hin: "खदान प्रमुख (आकराध्यक्ष) को भूविज्ञान और दुर्लभ-मृत्तिका (Rare-Earth) धातुकर्म के विशेषज्ञों के साथ मिलकर ही विनिर्माण कारखानों को स्थापित करना चाहिए।",
+        ori: "ଖଣି ବିଭାଗର ମୁଖ୍ୟ (ଆକରାଧ୍ୟକ୍ଷ) ଭୂବିଜ୍ଞାନ ଓ ଦୁର୍ଲଭ ଖଣିଜ (Rare-Earth) ଧାତୁ ଶୋଧନ ବିଶେଷଜ୍ଞମାନଙ୍କ ସହିତ ମିଳିତ ହୋଇ ଶିଳ୍ପ କାରଖାନା ପ୍ରତିଷ୍ଠା କରିବା ଆବଶ୍ୟକ।",
+        hud: "NODE: ORE MINING MATRIX\nINFRASTRUCTURE: AKARADHYAKSHA DEPT\nTEMP CORE: 28 CELSIUS\nFLUX DENSITY: 0.00 GAUSS",
+        gcode: "G21 ; Millimeter setup\nG90 ; Absolute calibration\nG00 X15.0 Y15.0 Z5.0 ; Position extraction mechanical armature\nG01 Z-5.0 F400 ; Begin ore layer segregation cutting\nM05 ; Hold module execution path"
+    },
+    {
+        title: "Phase 2: Kudua Furnace Sintering Protocols",
+        shloka: "सर्वषां लोहजातानां रसराजो महाबलः । करोति लोहसिद्धिं च तस्माद्रस इति स्मृतः ॥ (रसरत्नसर्जन १.४)",
+        eng: "Chemical essences drive absolute atomic synthesis; apply focused heat metrics inside the Kudua Blast Furnace to fuse the Neodymium blocks into high-density crystal matrices.",
+        hin: "सभी धातुओं और रासायनिक तत्वों में रसराज महाबलशाली है। धातुओं को स्थिरता प्रदान करने हेतु कुडुआ भट्टी के भीतर उच्च तापीय प्रद्रवण (Sintering) कार्य करें।",
+        ori: "ସମସ୍ତ ଧାତୁ ଓ ରସାୟନ ମଧ୍ୟରେ ରସରାଜ ମହାବଳଶାଳୀ ଅଟେ। ଧାତୁକୁ ସିଦ୍ଧି ଓ ସ୍ଥିରତା ପ୍ରଦାନ କରିବା ପାଇଁ କୁଡୁଆ ଭାଟି (Blast Furnace) ମଧ୍ୟରେ ଉଚ୍ଚ ତାପମାତ୍ରା ପ୍ରୋଟୋକଲ୍ ପ୍ରୟୋଗ କରନ୍ତୁ।",
+        hud: "NODE: KUDUA FURNACE FLUX\nINFRASTRUCTURE: RASARATNA CORE\nTEMP CORE: 1340 CELSIUS (SINTERING)\nFLUX DENSITY: 8500.45 GAUSS",
+        gcode: "M03 S15000 ; Power up furnace thermal coils\nG00 X45.0 Y45.0 Z12.0 ; Center alignment over clay crucible base\nG01 Z-20.0 F120 ; Lower raw elements down into heat zone\nG04 P8000 ; Dwell for atomic realignment parameters\nG00 Z25.0 ; Safely retract tool vector array"
+    },
+    {
+        title: "Phase 3: Spatial Architecture & Town Zoning",
+        shloka: "तन्मानं शास्त्रदृष्ट्यैव प्रामाणिकं भवेत् सदा । प्रस्तरं पाद्मकं चापि नगरविन्यासमध्वरे ॥ (मानसार ९.२)",
+        eng: "Construct structural frameworks strictly based on geometric ratios. Deploy the Prastara 9x9 layout matrix to zone heavy smelting factories far away from civic residential coordinates.",
+        hin: "स्थापत्य संरचना सदैव शास्त्रसम्मत अनुपातों में होनी चाहिए। कारखानों की सुरक्षा के लिए औद्योगिक क्षेत्रों को प्रस्तर ग्रिड (Prastara Grid) के तहत व्यवस्थित करें।",
+        ori: "ସ୍ଥାପତ୍ୟ ସଂରଚନା ସଦା ଶାସ୍ତ୍ରସମ୍ମତ ଗାଣିତିକ ଅନୁପାତରେ ହେବା ଉଚିତ। କାରଖାନାର ସୁରକ୍ଷା ପାଇଁ ପ୍ରସ୍ତର ଗ୍ରିଡ୍ (Prastara 9x9 Grid) ଅନୁସାରେ ଶିଳ୍ପ ଜୋନ୍ ପ୍ରତିଷ୍ଠା କରନ୍ତୁ।",
+        hud: "NODE: INDUSTRIAL ZONING\nINFRASTRUCTURE: MANASARA STRUCTURAL GRID\nTEMP CORE: 35 CELSIUS\nFLUX DENSITY: 14200.80 GAUSS (MAX ALIGNED)",
+        gcode: "G00 X0.0 Y0.0 ; Reset axis alignment\nG01 X100.0 F1500 ; Cut boundary line edge for Production Zone A\nG01 Y100.0 ; Route line edge for Commerce Outflow Flank\nG01 X0.0 ;\nG01 Y0.0 ;\nM30 ; System execution successfully completed"
+    }
+];
+
+let activePageIndex = 0;
+let isExplodedViewActive = false;
+
+// --- SYNTHETIC WEB AUDIO ENGINE CLASS DESIGN ---
+class WebAudioSystem {
+    constructor() {
+        this.ctx = null;
+    }
+    init() {
+        if (!this.ctx) {
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            this.startDeepDrone();
+        }
+    }
+    startDeepDrone() {
+        if (!this.ctx) return;
+        let osc = this.ctx.createOscillator();
+        let gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(108, this.ctx.currentTime); // 108Hz harmonic baseline scale
+        gain.gain.setValueAtTime(0.02, this.ctx.currentTime);
+        let lp = this.ctx.createBiquadFilter();
+        lp.type = 'lowpass';
+        lp.frequency.setValueAtTime(300, this.ctx.currentTime);
+        osc.connect(lp);
+        lp.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+    }
+    playChime() {
+        if (!this.ctx) return;
+        let osc = this.ctx.createOscillator();
+        let gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(528, this.ctx.currentTime); // 528Hz Solfeggio Transformation Tone
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.8);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.8);
+    }
+    playAlert() {
+        if (!this.ctx) return;
+        let osc = this.ctx.createOscillator();
+        let gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(880, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.4);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.4);
+    }
+}
+const audioEngine = new WebAudioSystem();
+
+// --- THREE.JS WebGL KUDUA BLAST FURNACE RECONSTRUCTION ---
+const frame = document.getElementById('webglFrame');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x060503);
+
+const camera = new THREE.PerspectiveCamera(45, frame.clientWidth / frame.clientHeight, 0.1, 1000);
+camera.position.set(7, 7, 13);
+camera.lookAt(0, 0, 0);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(frame.clientWidth, frame.clientHeight);
+frame.appendChild(renderer.domElement);
+
+// Manasara Framework Alignment Display Grid
+const industrialGrid = new THREE.GridHelper(12, 12, 0x7a001e, 0x3d230d);
+scene.add(industrialGrid);
+
+// Lighting Systems setup
+scene.add(new THREE.AmbientLight(0xffffff, 0.65));
+const thermalLightSource = new THREE.PointLight(0xff5500, 2, 30);
+thermalLightSource.position.set(0, 2, 0);
+scene.add(thermalLightSource);
+
+// Assembly Matrix Group
+const plantAssemblyGroup = new THREE.Group();
+scene.add(plantAssemblyGroup);
+
+// Component Meshes Definition
+const outerShellMesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(1.8, 2.2, 4, 32, 1, true),
+    new THREE.MeshStandardMaterial({ color: 0xb5651d, wireframe: true })
+);
+
+const innerCrucibleMesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(1.0, 1.0, 3, 16),
+    new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.4, metalness: 0.7 })
+);
+innerCrucibleMesh.position.y = -0.3;
+
+const neodymiumMagnetMesh = new THREE.Mesh(
+    new THREE.BoxGeometry(1.3, 1.3, 1.3),
+    new THREE.MeshStandardMaterial({ color: 0x00ffcc, roughness: 0.1, metalness: 0.9 })
+);
+neodymiumMagnetMesh.position.y = 3.5;
+
+plantAssemblyGroup.add(outerShellMesh);
+plantAssemblyGroup.add(innerCrucibleMesh);
+plantAssemblyGroup.add(neodymiumMagnetMesh);
+
+// --- MATHEMATICAL FLUX REALTIME GRAPH PLOTTER ENGINE ---
+const graphCanvas = document.getElementById('vectorGraphCanvas');
+const graphCtx = graphCanvas.getContext('2d');
+let graphWidth = graphCanvas.clientWidth || 500;
+let graphHeight = graphCanvas.clientHeight || 170;
+graphCanvas.width = graphWidth;
+graphCanvas.height = graphHeight;
+
+let pointsHistoryStack = [];
+
+function updateFluxGraphLog(newValue) {
+    pointsHistoryStack.push(newValue);
+    if (pointsHistoryStack.length > graphWidth / 3) {
+        pointsHistoryStack.shift();
+    }
+    graphCtx.clearRect(0, 0, graphWidth, graphHeight);
+
+    // Render alignment sub-grid lines
+    graphCtx.strokeStyle = "rgba(122, 0, 30, 0.25)";
+    graphCtx.lineWidth = 1;
+    for (let i = 0; i < graphWidth; i += 40) {
+        graphCtx.beginPath(); graphCtx.moveTo(i, 0); graphCtx.lineTo(i, graphHeight); graphCtx.stroke();
+    }
+
+    // Draw dynamic laser data vector plot path line
+    graphCtx.strokeStyle = "#00ffcc";
+    graphCtx.lineWidth = 2.5;
+    graphCtx.beginPath();
+    for (let i = 0; i < pointsHistoryStack.length; i++) {
+        let yCoordinate = graphHeight - (pointsHistoryStack[i] / 16000) * (graphHeight - 20) - 10;
+        let xCoordinate = i * 3;
+        if (i === 0) graphCtx.moveTo(xCoordinate, yCoordinate);
+        else graphCtx.lineTo(xCoordinate, yCoordinate);
+    }
+    graphCtx.stroke();
+}
+
+// --- ANIMATION PIPELINE COMPUTATION LOOP ---
+function masterRenderLoop() {
+    requestAnimationFrame(masterRenderLoop);
+    plantAssemblyGroup.rotation.y += 0.005;
+
+    // Animate components based on active settings matrix
+    if (isExplodedViewActive) {
+        outerShellMesh.position.y = THREE.MathUtils.lerp(outerShellMesh.position.y, 2.0, 0.05);
+        innerCrucibleMesh.position.y = THREE.MathUtils.lerp(innerCrucibleMesh.position.y, -2.0, 0.05);
+        neodymiumMagnetMesh.position.y = THREE.MathUtils.lerp(neodymiumMagnetMesh.position.y, 0.0, 0.05);
+    } else {
+        outerShellMesh.position.y = THREE.MathUtils.lerp(outerShellMesh.position.y, 0.0, 0.05);
+        innerCrucibleMesh.position.y = THREE.MathUtils.lerp(innerCrucibleMesh.position.y, -0.3, 0.05);
+        neodymiumMagnetMesh.position.y = THREE.MathUtils.lerp(neodymiumMagnetMesh.position.y, 3.5, 0.05);
+    }
+
+    // Compute real-time magnetic flux properties based on active manuscript folio page index
+    let targetBaseFlux = (activePageIndex === 1) ? 8500 : (activePageIndex === 2) ? 14200 : 100;
+    let ambientNoiseFlux = targetBaseFlux + (Math.random() - 0.5) * 400;
+    if (ambientNoiseFlux < 0) ambientNoiseFlux = 0;
+    updateFluxGraphLog(ambientNoiseFlux);
+
+    // Dynamic structural updates directly matching UI panels
+    let hud = document.getElementById('hudPanel');
+    if (hud) {
+        let panelLines = hud.innerHTML.split('<br>');
+        if (panelLines.length >= 4) {
+            panelLines[3] = `MAGNETIC FLUX: ${ambientNoiseFlux.toFixed(2)} GAUSS`;
+            hud.innerHTML = panelLines.join('<br>');
+        }
+    }
+
+    renderer.render(scene, camera);
+}
+masterRenderLoop();
+
+// --- WORKFLOW SELECTION CONTROL CONTROLLER INTERFACE ---
+function handlePipelineNavigation(action) {
+    if (action === 'next' && activePageIndex < manualPages.length - 1) {
+        activePageIndex++;
+        audioEngine.playChime();
+    } else if (action === 'prev' && activePageIndex > 0) {
+        activePageIndex--;
+        audioEngine.playChime();
+    }
+    const leafData = manualPages[activePageIndex];
+
+    // Force DOM rendering updates instantly
+    document.getElementById('stageTitle').innerText = leafData.title;
+    document.getElementById('sanskritSource').innerText = leafData.shloka;
+    document.getElementById('engText').innerText = leafData.eng;
+    document.getElementById('hinText').innerText = leafData.hin;
+    document.getElementById('oriText').innerText = leafData.ori;
+    document.getElementById('hudPanel').innerHTML = leafData.hud.replace(/\n/g, '<br>');
+
+    const logger = document.getElementById('logTerminal');
+    logger.innerText = `> Swapped folio page view node to: ${leafData.title}\n> Automated machine instructions calculated successfully. READY to map G-Code.`;
+    logger.scrollTop = 0;
+}
+
+function triggerExplodedToggle() {
+    isExplodedViewActive = !isExplodedViewActive;
+    audioEngine.playAlert();
+    const logger = document.getElementById('logTerminal');
+    logger.innerText = `> Exploded View Model parameter set to: ${isExplodedViewActive}\n> Re-arranging WebGL mesh structural assembly positions...`;
+}
+
+function buildLiveGCode() {
+    const targetLeaf = manualPages[activePageIndex];
+    audioEngine.playChime();
+    const logger = document.getElementById('logTerminal');
+    logger.innerText = `> Executing Kautilya Production Factory API Compiler Module...\n> Realizing geometric layouts from Śilpaśāstra rules...\n\n[SUCCESS COMPILING CNC MACHINES DIRECTIVES]:\n${targetLeaf.gcode}`;
+    logger.scrollTop = logger.scrollHeight;
+}
+
+window.addEventListener('resize', () => {
+    if (frame.clientWidth && frame.clientHeight) {
+        camera.aspect = frame.clientWidth / frame.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(frame.clientWidth, frame.clientHeight);
+    }
+    graphWidth = graphCanvas.clientWidth;
+    graphHeight = graphCanvas.clientHeight;
+    graphCanvas.width = graphWidth;
+    graphCanvas.height = graphHeight;
+});
+</script>
+
+</body>
+</html>
