@@ -2,8 +2,8 @@ import React from 'react';
 import { BookOpen, Layers, Compass, Sliders, Sparkles, Shield, Flame, Terminal, FileText } from 'lucide-react';
 
 interface HeaderNavProps {
-  activeTab: 'chapters' | 'furnace' | 'manasara' | 'workbench' | 'cad' | 'summary' | 'master' | 'ai';
-  onSelectTab: (tab: 'chapters' | 'furnace' | 'manasara' | 'workbench' | 'cad' | 'summary' | 'master' | 'ai') => void;
+  activeTab: 'chapters' | 'furnace' | 'manasara' | 'workbench' | 'cad' | 'nagarjuna' | 'summary' | 'master' | 'ai';
+  onSelectTab: (tab: 'chapters' | 'furnace' | 'manasara' | 'workbench' | 'cad' | 'nagarjuna' | 'summary' | 'master' | 'ai') => void;
   currentChapterId: number;
 }
 
@@ -109,6 +109,18 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
           >
             <Terminal className="w-4 h-4 text-[#e0a845]" />
             <span>CAD & G-Code (ଜି-କୋଡ୍)</span>
+          </button>
+
+          <button
+            onClick={() => onSelectTab('nagarjuna')}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+              activeTab === 'nagarjuna'
+                ? 'bg-[#1b4332] text-[#fff4e6] border border-[#2d6a4f] shadow-[0_0_10px_rgba(27,67,50,0.5)]'
+                : 'text-[#95d5b2] hover:bg-[#1b4332]/40 hover:text-[#d8f3dc]'
+            }`}
+          >
+            <BookOpen className="w-4 h-4 text-[#52b788]" />
+            <span>Nagarjuna Lab & CI/CD (ନାଗାର୍ଜୁନ ଲ୍ୟାବ୍)</span>
           </button>
 
           <button

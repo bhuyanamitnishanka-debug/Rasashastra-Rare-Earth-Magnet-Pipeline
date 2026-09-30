@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   FileCode, Terminal, Download, Copy, Check, Play, Pause, 
-  Rotate3d, Layers, Cpu, Compass, ShieldCheck, Sparkles, Send, CheckCircle2 
+  Rotate3d, Layers, Cpu, Compass, ShieldCheck, Sparkles, Send, CheckCircle2,
+  RotateCcw, SkipForward, SkipBack, Gauge, Zap
 } from 'lucide-react';
 
 export const CadGCodeStudio: React.FC = () => {
-  const [selectedProfile, setSelectedProfile] = useState<'kudua_furnace' | 'crucible_musha' | 'gear_train' | 'manasara_grid'>('kudua_furnace');
+  const [selectedProfile, setSelectedProfile] = useState<'kudua_furnace' | 'crucible_musha' | 'gear_train' | 'manasara_grid'>('crucible_musha');
   const [activeTab, setActiveTab] = useState<'3d_cad' | 'gcode' | 'api_sync' | 'feedback'>('3d_cad');
   const [copied, setCopied] = useState(false);
   const [isRotating, setIsRotating] = useState(true);
@@ -14,6 +15,11 @@ export const CadGCodeStudio: React.FC = () => {
   const [nozzleTemp, setNozzleTemp] = useState(1350); // Celsius for refractory ceramic printing
   const [bedTemp, setBedTemp] = useState(180);
   const [feedRate, setFeedRate] = useState(2400); // mm/min
+
+  // Musha Core CNC Stepper State
+  const [mushaSimStep, setMushaSimStep] = useState<number>(0);
+  const [isSimPlaying, setIsSimPlaying] = useState<boolean>(false);
+  const toolpathCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
   // IIT-Coordination Feedback State
   const [researchFeedback, setResearchFeedback] = useState('');
@@ -262,8 +268,125 @@ export const CadGCodeStudio: React.FC = () => {
 
   }, [rotationAngle, selectedProfile]);
 
+  // Exact ISO Metric Machining Routine for Musha Core
+  const mushaCoreMachiningGCode = `; =========================================================================
+; NEPAL-BHARAT RASASHASTRA-AI: MACHINING ROUTINE
+# Component: Inner Core Crucible Part (Musha Core)
+# Standard: ISO Metric G-Code | Aligned via Manasara Units
+; =========================================================================
+
+G21 ; Set system units to millimeters
+G90 ; Set machine positioning to Absolute Mode
+M03 S12000 ; Spin up milling spindle to 12,000 RPM (Optimal Sintering Cut)
+
+; --- STEP 1: RAPID POSITIONING & APPROACH ---
+G00 X45.000 Y45.000 Z5.000 ; Rapid travel directly over the grid center node
+M07 ; Engage mist coolant for carbon/ceramic dust suppression
+
+; --- STEP 2: PLUNGE & INITIAL PLUNGE HOLE CUT ---
+G01 Z-2.500 F300 ; Linear feed entry plunge into raw stock top surface
+G01 X45.000 Y45.000 Z-5.000 F150 ; Feed plunge to initial structural floor depth
+
+; --- STEP 3: INNER CHAMBER CIRCULAR INTERPOLATION ---
+G02 X45.000 Y45.000 I10.000 J0.000 F600 ; Counter-clockwise circular excavation cut (Radius: 10mm)
+G01 Z-10.000 F150 ; Plunge deeper to mid-section crucible cavity chamber
+G02 X45.000 Y45.000 I15.000 J0.000 F800 ; Wider clean-up circular wall pass (Radius: 15mm)
+
+; --- STEP 4: FLOOR FINISHING & BASE RAMPING ---
+G01 Z-15.000 F120 ; Reach final internal chamber floor coordinate limit
+G03 X45.000 Y45.000 I15.000 J0.000 F400 ; Mirror finishing pass to ensure flat floor geometry
+
+; --- STEP 5: SAFE RETRACTION & SHUTDOWN ---
+G00 Z25.000 M05 ; Rapid retract tool along Z-axis and power down spindle safely
+M09 ; Shut off coolant system feed lines
+M30 ; End of program execution path matrix
+; =========================================================================`;
+
+  const mushaMachiningSteps = [
+    {
+      step: 0,
+      title: "Spindle Startup & Modal Config",
+      code: "G21\nG90\nM03 S12000",
+      desc: "Set metric units (mm), absolute positioning mode, and spin spindle to 12,000 RPM optimal sintering cut speed.",
+      x: 0,
+      y: 0,
+      z: 10,
+      feed: 0,
+      spindle: 12000,
+      coolant: false,
+      radius: 0
+    },
+    {
+      step: 1,
+      title: "Step 1: Rapid Positioning & Approach",
+      code: "G00 X45.000 Y45.000 Z5.000\nM07",
+      desc: "Rapid travel over Manasara grid center node (45, 45) at clearance height Z=5.000mm; engage mist coolant for particulate suppression.",
+      x: 45,
+      y: 45,
+      z: 5,
+      feed: 1200,
+      spindle: 12000,
+      coolant: true,
+      radius: 0
+    },
+    {
+      step: 2,
+      title: "Step 2: Plunge & Initial Hole Cut",
+      code: "G01 Z-2.500 F300\nG01 X45.000 Y45.000 Z-5.000 F150",
+      desc: "Linear feed plunge into raw stock top surface (Z=-2.5mm @ 300 mm/min), then plunge to floor depth (Z=-5.0mm @ 150 mm/min).",
+      x: 45,
+      y: 45,
+      z: -5,
+      feed: 150,
+      spindle: 12000,
+      coolant: true,
+      radius: 5
+    },
+    {
+      step: 3,
+      title: "Step 3: Inner Chamber Circular Excavation",
+      code: "G02 X45.000 Y45.000 I10.000 J0.000 F600\nG01 Z-10.000 F150\nG02 X45.000 Y45.000 I15.000 J0.000 F800",
+      desc: "Counter-clockwise excavation cut (R=10mm @ 600 mm/min), plunge deeper to Z=-10mm, wider clean-up wall pass (R=15mm @ 800 mm/min).",
+      x: 45,
+      y: 45,
+      z: -10,
+      feed: 800,
+      spindle: 12000,
+      coolant: true,
+      radius: 15
+    },
+    {
+      step: 4,
+      title: "Step 4: Floor Finishing & Base Ramping",
+      code: "G01 Z-15.000 F120\nG03 X45.000 Y45.000 I15.000 J0.000 F400",
+      desc: "Reach final internal chamber floor limit (Z=-15mm @ 120 mm/min), execute mirror finishing circular pass (R=15mm @ 400 mm/min).",
+      x: 45,
+      y: 45,
+      z: -15,
+      feed: 400,
+      spindle: 12000,
+      coolant: true,
+      radius: 15
+    },
+    {
+      step: 5,
+      title: "Step 5: Safe Retraction & Shutdown",
+      code: "G00 Z25.000 M05\nM09\nM30",
+      desc: "Rapid retract cutter along Z-axis to safe clearance Z=25mm, halt spindle (M05), turn off mist coolant (M09), and end execution (M30).",
+      x: 45,
+      y: 45,
+      z: 25,
+      feed: 1500,
+      spindle: 0,
+      coolant: false,
+      radius: 0
+    }
+  ];
+
   // Generate Parametric G-Code stream matching user request
-  const generatedGCode = `(=============================================================)
+  const generatedGCode = selectedProfile === 'crucible_musha'
+    ? mushaCoreMachiningGCode
+    : `(=============================================================)
 ( NEPAL-BHARAT RASASHASTRA-AI: HIGH-TEMP REFRACTORY CAM PROTOCOL )
 ( COMPONENT: ${selectedProfile.toUpperCase()} )
 ( STANDARD: RASARATNA SAMUCHAYA ADHYAYA 9-10 / MANASARA PRASTARA )
@@ -392,6 +515,154 @@ def simulate():
 if __name__ == "__main__":
     app.run(port=5000, debug=True)`;
 
+  // Toolpath simulation playback timer
+  useEffect(() => {
+    let timer: any;
+    if (isSimPlaying) {
+      timer = setInterval(() => {
+        setMushaSimStep(prev => (prev + 1) % mushaMachiningSteps.length);
+      }, 2000);
+    }
+    return () => clearInterval(timer);
+  }, [isSimPlaying]);
+
+  // Toolpath 2D Canvas Renderer for G-Code excavation
+  useEffect(() => {
+    const canvas = toolpathCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const w = canvas.width;
+    const h = canvas.height;
+    const cx = w / 2;
+    const cy = h / 2;
+    const scale = 4.2; // pixels per mm
+
+    // Dark coordinate viewport
+    ctx.fillStyle = '#0b0805';
+    ctx.fillRect(0, 0, w, h);
+
+    // Coordinate grid lines (10mm intervals)
+    ctx.strokeStyle = '#22150a';
+    ctx.lineWidth = 1;
+    for (let x = -50; x <= 50; x += 10) {
+      ctx.beginPath();
+      ctx.moveTo(cx + x * scale, 0);
+      ctx.lineTo(cx + x * scale, h);
+      ctx.stroke();
+    }
+    for (let y = -50; y <= 50; y += 10) {
+      ctx.beginPath();
+      ctx.moveTo(0, cy + y * scale);
+      ctx.lineTo(w, cy + y * scale);
+      ctx.stroke();
+    }
+
+    // Outer Crucible Stock Mantle (30mm radius)
+    ctx.strokeStyle = '#8c5024';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 30 * scale, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = '#b56d3518';
+    ctx.fill();
+
+    // Center datum crosshairs (X45.000, Y45.000)
+    ctx.strokeStyle = '#e0a84577';
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(cx - 32 * scale, cy);
+    ctx.lineTo(cx + 32 * scale, cy);
+    ctx.moveTo(cx, cy - 32 * scale);
+    ctx.lineTo(cx, cy + 32 * scale);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    const cur = mushaMachiningSteps[mushaSimStep];
+
+    // Excavated Cavity Cut (R = 10mm) - Step 3+
+    if (mushaSimStep >= 3) {
+      ctx.strokeStyle = '#00ffcc';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 10 * scale, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = '#00ffcc25';
+      ctx.fill();
+
+      ctx.fillStyle = '#00ffcc';
+      ctx.font = '10px monospace';
+      ctx.fillText('G02 R=10mm (CCW)', cx - 48, cy - 11 * scale);
+    }
+
+    // Outer Wall Clean-up Pass (R = 15mm) - Step 3+
+    if (mushaSimStep >= 3) {
+      ctx.strokeStyle = '#ffd285';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 15 * scale, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = '#ffd28520';
+      ctx.fill();
+
+      ctx.fillStyle = '#ffd285';
+      ctx.font = '10px monospace';
+      ctx.fillText(mushaSimStep >= 4 ? 'G03 Mirror Pass (R=15mm CW)' : 'G02 Wall Pass (R=15mm)', cx - 62, cy + 18 * scale);
+    }
+
+    // Initial Plunge Hole (Step 2+)
+    if (mushaSimStep >= 2) {
+      ctx.fillStyle = '#ff6b4aaa';
+      ctx.beginPath();
+      ctx.arc(cx, cy, 4.5 * scale, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Cutter tool head
+    ctx.strokeStyle = cur.spindle > 0 ? '#38bdf8' : '#94a3b8';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 5 * scale, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Spindle spinning cross indicator
+    if (cur.spindle > 0) {
+      const angle = (Date.now() / 60) % (Math.PI * 2);
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(angle) * 5 * scale, cy + Math.sin(angle) * 5 * scale);
+      ctx.lineTo(cx - Math.cos(angle) * 5 * scale, cy - Math.sin(angle) * 5 * scale);
+      ctx.stroke();
+    }
+
+    // Mist coolant particles
+    if (cur.coolant) {
+      ctx.fillStyle = '#38bdf8bb';
+      for (let i = 0; i < 8; i++) {
+        const dropAngle = (i * Math.PI) / 4 + (Date.now() / 250);
+        const dist = (8 + (i % 4) * 4) * scale * 0.4;
+        ctx.beginPath();
+        ctx.arc(cx + Math.cos(dropAngle) * dist, cy + Math.sin(dropAngle) * dist, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // On-canvas HUD
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = 'bold 10px monospace';
+    ctx.fillText(`CENTER NODE: (X:45.000, Y:45.000)`, 10, 20);
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = '10px monospace';
+    ctx.fillText(`Z-AXIS DEPTH: ${cur.z >= 0 ? '+' : ''}${cur.z.toFixed(3)} mm`, 10, 35);
+    ctx.fillText(`SPINDLE SPEED: ${cur.spindle.toLocaleString()} RPM`, 10, 50);
+    ctx.fillText(`COOLANT MIST: ${cur.coolant ? 'ACTIVE (M07)' : 'OFF (M09)'}`, 10, 65);
+    ctx.fillText(`FEEDRATE: ${cur.feed} mm/min`, 10, 80);
+  }, [mushaSimStep, activeTab, selectedProfile]);
+
   const handleCopyCode = (text: string) => {
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -402,7 +673,9 @@ if __name__ == "__main__":
     const element = document.createElement('a');
     const file = new Blob([generatedGCode], { type: 'text/plain' });
     element.href = URL.createObjectURL(file);
-    element.download = `${selectedProfile}_rasashastra.gcode`;
+    element.download = selectedProfile === 'crucible_musha'
+      ? 'musha_core_machining.gcode'
+      : `${selectedProfile}_rasashastra.gcode`;
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
@@ -684,29 +957,38 @@ if __name__ == "__main__":
       )}
 
       {activeTab === 'gcode' && (
-        <div className="space-y-3">
-          <div className="bg-[#18110a] border-2 border-[#a36c34] rounded-xl p-4 shadow-lg text-[#f1dec9]">
+        <div className="space-y-4">
+          {/* Header Banner for Musha Core Machining */}
+          <div className="bg-[#1c1208] border-2 border-[#a36c34] rounded-xl p-4 shadow-lg text-[#f1dec9]">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#593414] pb-2.5 mb-3">
               <div className="flex items-center gap-2">
-                <Terminal className="w-4 h-4 text-[#e0a845]" />
-                <span className="font-mono text-xs font-bold text-[#e0a845]">
-                  {selectedProfile.toUpperCase()}_FABRICATION_MATRIX.NC
-                </span>
-                <span className="text-[10px] bg-[#331c0a] px-2 py-0.5 rounded text-[#caa177] border border-[#6b3e19]">
-                  Standard ISO-6983 G-Code
-                </span>
+                <Terminal className="w-5 h-5 text-[#e0a845]" />
+                <div>
+                  <h3 className="font-mono text-sm font-bold text-[#e0a845] flex items-center gap-2">
+                    <span>{selectedProfile === 'crucible_musha' ? 'MUSHA_CORE_MACHINING.GCODE' : `${selectedProfile.toUpperCase()}_FABRICATION_MATRIX.NC`}</span>
+                    <span className="text-[10px] bg-[#331c0a] px-2 py-0.5 rounded text-[#caa177] border border-[#6b3e19] font-normal">
+                      ISO Metric Standard
+                    </span>
+                  </h3>
+                  <p className="text-[11px] text-[#caa177]">
+                    {selectedProfile === 'crucible_musha' 
+                      ? 'Component: Inner Core Crucible Part (Musha Core) | Aligned via Manasara Units'
+                      : 'High-Temperature Additive Sintering Path Matrix'}
+                  </p>
+                </div>
               </div>
+
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleCopyCode(generatedGCode)}
-                  className="flex items-center gap-1 px-3 py-1 text-xs rounded bg-[#3d2412] hover:bg-[#523119] border border-[#824c1e] text-[#f2dfca] transition-colors"
+                  className="flex items-center gap-1 px-3 py-1.5 text-xs rounded bg-[#3d2412] hover:bg-[#523119] border border-[#824c1e] text-[#f2dfca] transition-colors"
                 >
                   {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copied ? 'Copied' : 'Copy'}</span>
+                  <span>{copied ? 'Copied' : 'Copy G-Code'}</span>
                 </button>
                 <button
                   onClick={handleDownloadGCode}
-                  className="flex items-center gap-1 px-3 py-1 text-xs rounded bg-[#7a2e12] hover:bg-[#943917] text-white font-semibold shadow-sm transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded bg-[#7a2e12] hover:bg-[#943917] text-white font-semibold shadow-sm transition-colors"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>Download .gcode</span>
@@ -714,9 +996,135 @@ if __name__ == "__main__":
               </div>
             </div>
 
-            <pre className="font-mono text-xs leading-relaxed overflow-x-auto max-h-[440px] p-3 bg-[#110b06] rounded-lg border border-[#42250d] text-[#e0cfba] select-all">
-              {generatedGCode}
-            </pre>
+            {/* Interactive Machining Stepper & Toolpath Simulator */}
+            {selectedProfile === 'crucible_musha' && (
+              <div className="mb-4 bg-[#100b06] border border-[#542d10] rounded-xl p-3 sm:p-4">
+                <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
+                  <div className="flex items-center gap-2">
+                    <Gauge className="w-4 h-4 text-[#38bdf8]" />
+                    <span className="font-mono text-xs font-bold text-[#38bdf8] uppercase tracking-wider">
+                      Interactive Toolpath Stepper & CNC Machining Simulator
+                    </span>
+                  </div>
+
+                  {/* Step Controls */}
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => setMushaSimStep(prev => Math.max(0, prev - 1))}
+                      disabled={mushaSimStep === 0}
+                      className="px-2 py-1 rounded bg-[#2e1a0d] hover:bg-[#452814] disabled:opacity-40 text-xs font-mono text-[#f2dfca] flex items-center gap-1"
+                    >
+                      <SkipBack className="w-3 h-3" />
+                      <span>Prev</span>
+                    </button>
+                    <button
+                      onClick={() => setIsSimPlaying(prev => !prev)}
+                      className={`px-3 py-1 rounded text-xs font-mono font-bold flex items-center gap-1.5 transition-all ${
+                        isSimPlaying ? 'bg-[#7a001e] text-white' : 'bg-[#1b4332] hover:bg-[#2d6a4f] text-[#d8f3dc]'
+                      }`}
+                    >
+                      {isSimPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+                      <span>{isSimPlaying ? 'Pause Cycle' : 'Auto Play Cycle'}</span>
+                    </button>
+                    <button
+                      onClick={() => setMushaSimStep(prev => Math.min(mushaMachiningSteps.length - 1, prev + 1))}
+                      disabled={mushaSimStep === mushaMachiningSteps.length - 1}
+                      className="px-2 py-1 rounded bg-[#2e1a0d] hover:bg-[#452814] disabled:opacity-40 text-xs font-mono text-[#f2dfca] flex items-center gap-1"
+                    >
+                      <span>Next</span>
+                      <SkipForward className="w-3 h-3" />
+                    </button>
+                    <button
+                      onClick={() => { setMushaSimStep(0); setIsSimPlaying(false); }}
+                      className="p-1 rounded bg-[#2e1a0d] hover:bg-[#452814] text-[#caa177]"
+                      title="Reset Cycle"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Step indicator tabs */}
+                <div className="grid grid-cols-2 sm:grid-cols-6 gap-1.5 mb-3 text-[11px] font-mono">
+                  {mushaMachiningSteps.map((st, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => { setMushaSimStep(idx); setIsSimPlaying(false); }}
+                      className={`p-1.5 rounded text-left border transition-all ${
+                        mushaSimStep === idx
+                          ? 'bg-[#7a2e12] border-[#e0a845] text-white font-bold shadow-sm'
+                          : 'bg-[#181109] border-[#382312] text-[#9c7a5a] hover:bg-[#24170d]'
+                      }`}
+                    >
+                      <div className="text-[10px] text-[#ffd285]">STEP {idx}</div>
+                      <div className="truncate">{st.title.split(':')[1] || st.title}</div>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Simulation Canvas + Telemetry Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                  {/* Toolpath 2D Canvas */}
+                  <div className="md:col-span-7 bg-[#0b0805] rounded-lg border-2 border-[#542d10] p-1.5 flex items-center justify-center relative overflow-hidden shadow-inner">
+                    <canvas
+                      ref={toolpathCanvasRef}
+                      width={380}
+                      height={240}
+                      className="w-full h-[240px] max-w-full"
+                    />
+                    <div className="absolute bottom-2 right-2 bg-[#000000aa] border border-[#542d10] px-2 py-0.5 rounded text-[10px] font-mono text-[#00ffcc]">
+                      ISO Metric Coordinates
+                    </div>
+                  </div>
+
+                  {/* Active Step Telemetry Card */}
+                  <div className="md:col-span-5 space-y-2 bg-[#181109] border border-[#3e2412] p-3 rounded-lg text-xs font-mono">
+                    <div className="border-b border-[#3e2412] pb-1.5">
+                      <div className="text-[10px] text-[#e0a845] uppercase tracking-wider font-bold">
+                        {mushaMachiningSteps[mushaSimStep].title}
+                      </div>
+                      <p className="text-[11px] text-[#e2cfbe] mt-0.5 font-sans leading-relaxed">
+                        {mushaMachiningSteps[mushaSimStep].desc}
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-[11px] pt-1">
+                      <div className="bg-[#0f0a05] p-1.5 rounded border border-[#2d1b0d]">
+                        <span className="text-[#888] block text-[9px]">ACTIVE G-CODE:</span>
+                        <span className="text-[#38bdf8] font-bold whitespace-pre-line text-[10px]">
+                          {mushaMachiningSteps[mushaSimStep].code}
+                        </span>
+                      </div>
+                      <div className="bg-[#0f0a05] p-1.5 rounded border border-[#2d1b0d]">
+                        <span className="text-[#888] block text-[9px]">TOOL DEPTH (Z):</span>
+                        <span className="text-[#ffd285] font-bold text-xs">
+                          {mushaMachiningSteps[mushaSimStep].z >= 0 ? '+' : ''}{mushaMachiningSteps[mushaSimStep].z.toFixed(3)} mm
+                        </span>
+                      </div>
+                      <div className="bg-[#0f0a05] p-1.5 rounded border border-[#2d1b0d]">
+                        <span className="text-[#888] block text-[9px]">FEED RATE:</span>
+                        <span className="text-[#39ff14] font-bold">
+                          {mushaMachiningSteps[mushaSimStep].feed} mm/min
+                        </span>
+                      </div>
+                      <div className="bg-[#0f0a05] p-1.5 rounded border border-[#2d1b0d]">
+                        <span className="text-[#888] block text-[9px]">MIST COOLANT:</span>
+                        <span className={mushaMachiningSteps[mushaSimStep].coolant ? 'text-[#00ffcc] font-bold' : 'text-[#ff6b6b]'}>
+                          {mushaMachiningSteps[mushaSimStep].coolant ? 'M07 ACTIVE' : 'M09 OFF'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Code view */}
+            <div className="relative">
+              <pre className="font-mono text-xs leading-relaxed overflow-x-auto max-h-[400px] p-3 bg-[#110b06] rounded-lg border border-[#42250d] text-[#e0cfba] select-all">
+                {generatedGCode}
+              </pre>
+            </div>
           </div>
         </div>
       )}

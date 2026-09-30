@@ -23,13 +23,44 @@ const manualPages: ManualPage[] = [
     gcode: "G21 ; Millimeter setup\nG90 ; Absolute calibration\nG00 X15.0 Y15.0 Z5.0 ; Position extraction mechanical armature\nG01 Z-5.0 F400 ; Begin ore layer segregation cutting\nM05 ; Hold module execution path"
   },
   {
-    title: "Phase 2: Kudua Furnace Sintering Protocols",
+    title: "Phase 2: Kudua Furnace Sintering & Musha Core Machining",
     shloka: "सर्वषां लोहजातानां रसराजो महाबलः । करोति लोहसिद्धिं च तस्माद्रस इति स्मृतः ॥ (रसरत्नसर्जन १.४)",
-    eng: "Chemical essences drive absolute atomic synthesis; apply focused heat metrics inside the Kudua Blast Furnace to fuse the Neodymium blocks into high-density crystal matrices.",
-    hin: "सभी धातुओं और रासायनिक तत्वों में रसराज महाबलशाली है। धातुओं को स्थिरता प्रदान करने हेतु कुडुआ भट्टी के भीतर उच्च तापीय प्रद्रवण (Sintering) कार्य करें।",
-    ori: "ସମସ୍ତ ଧାତୁ ଓ ରସାୟନ ମଧ୍ୟରେ ରସରାଜ ମହାବଳଶାଳୀ ଅଟେ। ଧାତୁକୁ ସିଦ୍ଧି ଓ ସ୍ଥିରତା ପ୍ରଦାନ କରିବା ପାଇଁ କୁଡୁଆ ଭାଟି (Blast Furnace) ମଧ୍ୟରେ ଉଚ୍ଚ ତାପମାତ୍ରା ପ୍ରୋଟୋକଲ୍ ପ୍ରୟୋଗ କରନ୍ତୁ।",
-    hud: "NODE: KUDUA FURNACE FLUX\nINFRASTRUCTURE: RASARATNA CORE\nTEMP CORE: 1340 CELSIUS (SINTERING)\nFLUX DENSITY: 8500.45 GAUSS",
-    gcode: "M03 S15000 ; Power up furnace thermal coils\nG00 X45.0 Y45.0 Z12.0 ; Center alignment over clay crucible base\nG01 Z-20.0 F120 ; Lower raw elements down into heat zone\nG04 P8000 ; Dwell for atomic realignment parameters\nG00 Z25.0 ; Safely retract tool vector array"
+    eng: "Chemical essences drive atomic synthesis; machine the high-alumina Musha core with ISO metric G-code (12,000 RPM spindle) and apply focused heat inside the Kudua Blast Furnace.",
+    hin: "सभी धातुओं और तत्वों में रसराज महाबलशाली है। मूषा कोर (Crucible) का ISO मीट्रिक मशीनिंग कर कुडुआ भट्टी के भीतर उच्च तापीय प्रद्रवण (Sintering) कार्य करें।",
+    ori: "ସମସ୍ତ ଧାତୁ ଓ ରସାୟନ ମଧ୍ୟରେ ରସରାଜ ମହାବଳଶାଳୀ। ମୂଷା କୋର୍ (Musha Core) ପାଇଁ ISO ମେଟ୍ରିକ୍ CNC ରୁଟିନ୍ (୧୨,୦୦୦ RPM) ଅନୁଯାୟୀ କଟିଙ୍ଗ୍ ଏବଂ କୁଡୁଆ ଭାଟି ମଧ୍ୟରେ ଉଚ୍ଚ ତାପମାତ୍ରା ସିଣ୍ଟରିଂ କରନ୍ତୁ।",
+    hud: "NODE: KUDUA FURNACE & MUSHA CORE\nINFRASTRUCTURE: RASARATNA SAMUCHAYA\nTEMP CORE: 1340 CELSIUS (SINTERING)\nFLUX DENSITY: 8500.45 GAUSS\nCNC SPINDLE: 12,000 RPM (ISO METRIC)",
+    gcode: `; =========================================================================
+; NEPAL-BHARAT RASASHASTRA-AI: MACHINING ROUTINE
+# Component: Inner Core Crucible Part (Musha Core)
+# Standard: ISO Metric G-Code | Aligned via Manasara Units
+; =========================================================================
+
+G21 ; Set system units to millimeters
+G90 ; Set machine positioning to Absolute Mode
+M03 S12000 ; Spin up milling spindle to 12,000 RPM (Optimal Sintering Cut)
+
+; --- STEP 1: RAPID POSITIONING & APPROACH ---
+G00 X45.000 Y45.000 Z5.000 ; Rapid travel directly over the grid center node
+M07 ; Engage mist coolant for carbon/ceramic dust suppression
+
+; --- STEP 2: PLUNGE & INITIAL PLUNGE HOLE CUT ---
+G01 Z-2.500 F300 ; Linear feed entry plunge into raw stock top surface
+G01 X45.000 Y45.000 Z-5.000 F150 ; Feed plunge to initial structural floor depth
+
+; --- STEP 3: INNER CHAMBER CIRCULAR INTERPOLATION ---
+G02 X45.000 Y45.000 I10.000 J0.000 F600 ; Counter-clockwise circular excavation cut (Radius: 10mm)
+G01 Z-10.000 F150 ; Plunge deeper to mid-section crucible cavity chamber
+G02 X45.000 Y45.000 I15.000 J0.000 F800 ; Wider clean-up circular wall pass (Radius: 15mm)
+
+; --- STEP 4: FLOOR FINISHING & BASE RAMPING ---
+G01 Z-15.000 F120 ; Reach final internal chamber floor coordinate limit
+G03 X45.000 Y45.000 I15.000 J0.000 F400 ; Mirror finishing pass to ensure flat floor geometry
+
+; --- STEP 5: SAFE RETRACTION & SHUTDOWN ---
+G00 Z25.000 M05 ; Rapid retract tool along Z-axis and power down spindle safely
+M09 ; Shut off coolant system feed lines
+M30 ; End of program execution path matrix
+; =========================================================================`
   },
   {
     title: "Phase 3: Spatial Architecture & Town Zoning",
@@ -469,6 +500,33 @@ export const MasterMatrixPlatform: React.FC = () => {
             >
               <Terminal className="w-3.5 h-3.5 text-[#c084fc]" />
               <span>git_push_sync.sh</span>
+            </a>
+            <a
+              href="/musha_core_machining.gcode"
+              download="musha_core_machining.gcode"
+              className="flex items-center gap-1 px-2.5 py-1 rounded bg-[#5a3200] hover:bg-[#3d2200] text-white text-xs font-mono font-bold transition-colors border border-[#ffd285]/40"
+              title="Download ISO Metric Musha Core Machining G-Code"
+            >
+              <Terminal className="w-3.5 h-3.5 text-[#ffd285]" />
+              <span>musha_core.gcode</span>
+            </a>
+            <a
+              href="/nagarjuna_lab_suite.py"
+              download="nagarjuna_lab_suite.py"
+              className="flex items-center gap-1 px-2.5 py-1 rounded bg-[#1b4332] hover:bg-[#112d21] text-white text-xs font-mono font-bold transition-colors border border-[#52b788]/40"
+              title="Download Maharshi Nagarjuna Laboratory Testing Suite Python Script"
+            >
+              <Terminal className="w-3.5 h-3.5 text-[#52b788]" />
+              <span>nagarjuna_lab.py</span>
+            </a>
+            <a
+              href="/rasashastra_ci_cd.yml"
+              download="rasashastra_ci_cd.yml"
+              className="flex items-center gap-1 px-2.5 py-1 rounded bg-[#402060] hover:bg-[#2b1542] text-white text-xs font-mono font-bold transition-colors border border-[#c084fc]/40"
+              title="Download GitHub Actions CI/CD Pipeline Workflow"
+            >
+              <Terminal className="w-3.5 h-3.5 text-[#c084fc]" />
+              <span>ci_cd.yml</span>
             </a>
           </div>
         </div>

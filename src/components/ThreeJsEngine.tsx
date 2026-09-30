@@ -40,14 +40,45 @@ export const ThreeJsEngine: React.FC = () => {
       fluxGauss: 420
     },
     {
-      title: "Phase 2: Thermal Matrix Sintering (Kudua Furnace)",
-      devanagari: "कुडुवा भट्टी एवं तापीय सिन्टरिंग",
+      title: "Phase 2: Kudua Sintering & Musha Core Machining",
+      devanagari: "कुडुवा भट्टी एवं मूषा कोर मशीनिंग",
       shloka: "सर्वषां लोहजातानां रसराजो महाबलः । करोति लोहसिद्धिं च तस्माद्रस इति स्मृतः ॥ (रसरत्नसमुच्चयः १.४)",
-      eng: "Mercury and elemental chemical essences drive absolute metallic synthesis; apply thermal metrics inside the Kudua Blast Furnace to process the crystal blocks.",
-      hin: "सभी धातुओं और रासायनिक तत्त्वों में रसराज महाबलशाली है। धातुओं को स्थिरता प्रदान करने हेतु कुडुआ भट्टी के भीतर उच्च तापीय प्रद्रवण (Sintering) कार्य करें।",
-      ori: "ସମସ୍ତ ଧାତୁ ଓ ରସାୟନ ମଧ୍ୟରେ ରସରାଜ ମହାବଳଶାଳୀ ଅଟେ। ଧାତୁକୁ ସିଦ୍ଧି ଓ ସ୍ଥିରତା ପ୍ରଦାନ କରିବା ପାଇଁ କୁଡୁଆ ଭାଟି (Blast Furnace) ମଧ୍ୟରେ ଉଚ୍ଚ ତାପମାତ୍ରା ପ୍ରୋଟୋକଲ୍ ପ୍ରୟୋଗ କରନ୍ତୁ।",
-      hud: "SYSTEM: THERMAL SINTERING ACTIVE\nUNIT: KUDUA BLAST FURNACE CORE\nTEMPERATURE: 1380°C (OPTIMAL ARREST)\nPHASE: EUTECTIC LIQUID WETTING",
-      gcode: "M03 S14000 ; Spin up Induction Furnace coils\nG00 X45.0 Y45.0 Z10.0 ; Center focus over Kudua Crucible chamber\nG01 Z-15.0 F150 ; Lower Neodymium compound block into high thermal zone\nG04 P5000 ; Dwell for structural melting matrix\nG00 Z20.0 ; Retract core node",
+      eng: "Mercury and elemental chemical essences drive metallic synthesis; execute ISO metric CNC machining of the Musha Core (12,000 RPM) and apply thermal sintering inside the Kudua Blast Furnace.",
+      hin: "सभी धातुओं और रासायनिक तत्त्वों में रसराज महाबलशाली है। मूषा कोर का ISO मीट्रिक मशीनिंग कर कुडुआ भट्टी के भीतर उच्च तापीय प्रद्रवण (Sintering) कार्य करें।",
+      ori: "ସମସ୍ତ ଧାତୁ ଓ ରସାୟନ ମଧ୍ୟରେ ରସରାଜ ମହାବଳଶାଳୀ। ମୂଷା କୋର୍ (Musha Core) ପାଇଁ ISO ମେଟ୍ରିକ୍ CNC ରୁଟିନ୍ (୧୨,୦୦୦ RPM) ଅନୁଯାୟୀ କଟିଙ୍ଗ୍ ଏବଂ କୁଡୁଆ ଭାଟି ମଧ୍ୟରେ ଉଚ୍ଚ ତାପମାତ୍ରା ସିଣ୍ଟରିଂ କରନ୍ତୁ।",
+      hud: "SYSTEM: THERMAL SINTERING & CORE CNC\nUNIT: KUDUA BLAST FURNACE & MUSHA CORE\nTEMPERATURE: 1380°C (OPTIMAL ARREST)\nPHASE: EUTECTIC LIQUID WETTING\nCNC SPINDLE: 12,000 RPM (ISO METRIC)",
+      gcode: `; =========================================================================
+; NEPAL-BHARAT RASASHASTRA-AI: MACHINING ROUTINE
+# Component: Inner Core Crucible Part (Musha Core)
+# Standard: ISO Metric G-Code | Aligned via Manasara Units
+; =========================================================================
+
+G21 ; Set system units to millimeters
+G90 ; Set machine positioning to Absolute Mode
+M03 S12000 ; Spin up milling spindle to 12,000 RPM (Optimal Sintering Cut)
+
+; --- STEP 1: RAPID POSITIONING & APPROACH ---
+G00 X45.000 Y45.000 Z5.000 ; Rapid travel directly over the grid center node
+M07 ; Engage mist coolant for carbon/ceramic dust suppression
+
+; --- STEP 2: PLUNGE & INITIAL PLUNGE HOLE CUT ---
+G01 Z-2.500 F300 ; Linear feed entry plunge into raw stock top surface
+G01 X45.000 Y45.000 Z-5.000 F150 ; Feed plunge to initial structural floor depth
+
+; --- STEP 3: INNER CHAMBER CIRCULAR INTERPOLATION ---
+G02 X45.000 Y45.000 I10.000 J0.000 F600 ; Counter-clockwise circular excavation cut (Radius: 10mm)
+G01 Z-10.000 F150 ; Plunge deeper to mid-section crucible cavity chamber
+G02 X45.000 Y45.000 I15.000 J0.000 F800 ; Wider clean-up circular wall pass (Radius: 15mm)
+
+; --- STEP 4: FLOOR FINISHING & BASE RAMPING ---
+G01 Z-15.000 F120 ; Reach final internal chamber floor coordinate limit
+G03 X45.000 Y45.000 I15.000 J0.000 F400 ; Mirror finishing pass to ensure flat floor geometry
+
+; --- STEP 5: SAFE RETRACTION & SHUTDOWN ---
+G00 Z25.000 M05 ; Rapid retract tool along Z-axis and power down spindle safely
+M09 ; Shut off coolant system feed lines
+M30 ; End of program execution path matrix
+; =========================================================================`,
       dxfEntity: "0\nCIRCLE\n8\nKudua_Furnace_Core\n10\n45.0\n20\n45.0\n40\n15.0\n",
       targetTemp: 1380,
       fluxGauss: 14500

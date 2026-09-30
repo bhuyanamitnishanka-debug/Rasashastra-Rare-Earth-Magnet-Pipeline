@@ -5,13 +5,14 @@ import { ExplodedFurnaceViewer } from './components/ExplodedFurnaceViewer';
 import { ManasaraGridStudio } from './components/ManasaraGridStudio';
 import { MagneticWorkbench } from './components/MagneticWorkbench';
 import { CadGCodeStudio } from './components/CadGCodeStudio';
+import { NagarjunaLabSimulator } from './components/NagarjunaLabSimulator';
 import { ProjectSummaryDoc } from './components/ProjectSummaryDoc';
 import { MasterMatrixPlatform } from './components/MasterMatrixPlatform';
 import { RasashastraAiConsult } from './components/RasashastraAiConsult';
 import { Scroll, Compass, Flame, Shield, ArrowUpRight } from 'lucide-react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'chapters' | 'furnace' | 'manasara' | 'workbench' | 'cad' | 'summary' | 'master' | 'ai'>('chapters');
+  const [activeTab, setActiveTab] = useState<'chapters' | 'furnace' | 'manasara' | 'workbench' | 'cad' | 'nagarjuna' | 'summary' | 'master' | 'ai'>('chapters');
   const [currentChapterId, setCurrentChapterId] = useState<number>(1);
 
   const handleSelectChapterFromNav = (id: number) => {
@@ -110,6 +111,12 @@ export default function App() {
         {activeTab === 'cad' && (
           <div className="space-y-6">
             <CadGCodeStudio />
+          </div>
+        )}
+
+        {activeTab === 'nagarjuna' && (
+          <div className="space-y-6">
+            <NagarjunaLabSimulator />
           </div>
         )}
 

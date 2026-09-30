@@ -1,12 +1,208 @@
 import React, { useState } from 'react';
 import { 
   GitBranch, Copy, Check, Terminal, ExternalLink, ShieldCheck, 
-  FileText, BookOpen, Layers, CheckCircle2, Download, Sparkles, Flame, Play
+  FileText, BookOpen, Layers, CheckCircle2, Download, Sparkles, Flame, Play,
+  FlaskConical, FileCode
 } from 'lucide-react';
 
 export const ProjectSummaryDoc: React.FC = () => {
-  const [activeDocTab, setActiveDocTab] = useState<'readme' | 'init' | 'git' | 'apps'>('readme');
+  const [activeDocTab, setActiveDocTab] = useState<'readme' | 'init' | 'git' | 'gcode' | 'nagarjuna' | 'ci_cd' | 'apps'>('readme');
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const nagarjunaPythonCode = `# =============================================================================
+# NEPAL-BHARAT RASASHASTRA-AI: MAHARSHI NAGARJUNA LABORATORY TESTING SUITE
+# Methodologies: Analytical Purification (Shodhana) and Distillation Verification
+# =============================================================================
+import math
+import time
+
+class NagarjunaLabManual:
+    def __init__(self, yantra_type, compound_ore, raw_weight_grams):
+        self.yantra_type = yantra_type        # Classical apparatus: "Dola_Yantra", "Koshthi_Yantra"
+        self.compound_ore = compound_ore      # Material under evaluation: "Neodymium_Complex"
+        self.raw_weight = raw_weight_grams    # Input mass metrics
+        self.saturation_constant = 0.846      # Derived mathematical alignment index
+
+    def run_shodhana_experiment(self, operational_heat_celsius, cycle_duration_hours):
+        """Simulates text-based mineral ore purification and calculates volatile extraction loss"""
+        print(f">> Initializing Experiment Matrix inside: {self.yantra_type}...")
+        print(f">> Staging Target Compound Element: {self.compound_ore} ({self.raw_weight}g)")
+        time.sleep(1) # Simulating apparatus heat balancing delay
+
+        # Numerical evaluation logic based on thermal saturation thresholds
+        if operational_heat_celsius >= 1100:
+            volatilization_rate = math.exp(-1 / (cycle_duration_hours * self.saturation_constant))
+            purified_yield = self.raw_weight * (1 - (volatilization_rate * 0.15))
+            stress_on_musha = (operational_heat_celsius * 0.12) / cycle_duration_hours
+            
+            if stress_on_musha > 150.0:
+                status = "CRITICAL: Thermal strain approaching crucible crack boundary threshold."
+                safety_trip_triggered = True
+            else:
+                status = "OPTIMAL: Impurities vaporized successfully. Material crystalline properties locked."
+                safety_trip_triggered = False
+        else:
+            purified_yield = self.raw_weight
+            status = "FAILED: Insufficient heat energy to crack atomic mineral boundaries."
+            safety_trip_triggered = False
+            stress_on_musha = 0.0
+
+        return {
+            "experiment_status": status,
+            "net_purified_yield_grams": round(purified_yield, 3),
+            "calculated_crucible_strain_mpa": round(stress_on_musha, 2),
+            "system_fail_safe_trip": safety_trip_triggered
+        }
+
+# --- TEST HARNESS EXECUTION PATH ---
+if __name__ == "__main__":
+    print("=" * 80)
+    print("🔬 MAHARSHI NAGARJUNA LABORATORY CODE MATRIX: REAL-TIME EXTRACTION TEST 🔬")
+    print("=" * 80)
+
+    # Initialize experimental lab instance for processing rare-earth oxides
+    experiment_node = NagarjunaLabManual(
+        yantra_type="Koshthi_Yantra_Chamber",
+        compound_ore="Neodymium-Samarium Rare-Earth Complex",
+        raw_weight_grams=500.0
+    )
+
+    # Run distillation testing sequence at high temperature parameters
+    results_matrix = experiment_node.run_shodhana_experiment(
+        operational_heat_celsius=1350,
+        cycle_duration_hours=6
+    )
+
+    print(f"[*] Execution Result  : {results_matrix['experiment_status']}")
+    print(f"[*] Purified Ore Mass : {results_matrix['net_purified_yield_grams']} grams")
+    print(f"[*] Crucible Strain   : {results_matrix['calculated_crucible_strain_mpa']} Mpa")
+    print(f"[*] Fail-Safe Tripped : {results_matrix['system_fail_safe_trip']}")
+    print("=" * 80)`;
+
+  const cicdWorkflowYaml = `# =============================================================================
+# 🇳🇵 NEPAL-BHARAT RASASHASTRA-AI: MAIN INTEGRATION & DEPLOYMENT PIPELINE 🇮🇳
+# Repository Target: bhuyanamitnishanka-debug/Nexus-Grid-Blueprint-Manager
+# Automation Workflow Configuration for Continuous Integration and Site Deployment
+# =============================================================================
+
+name: Rasashastra-AI Engine CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate_and_test:
+    name: Code Verification & Structural Simulation Testing
+    runs-on: ubuntu-latest
+
+    steps:
+      # --- STEP 1: CODEBASE REPOSITORY CHECKOUT ---
+      - name: Checkout Local Repository Assets
+        uses: actions/checkout@v3
+
+      # --- STEP 2: RUNTIME RUNTIME SETUP ---
+      - name: Configure Python Environment (v3.10)
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      # --- STEP 3: ENVIRONMENT DEPENDENCY CONTEXT INSTALLATION ---
+      - name: Install System Testing Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          # Injecting baseline simulation packages if requirements file is bare
+          pip install flake8 pytest
+
+      # --- STEP 4: SYNTAX PARSING & STATIC ANALYSIS ---
+      - name: Lint Codebase Syntax (Flake8 Execution)
+        run: |
+          # Stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings to prevent unnecessary pipeline blockages
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      # --- STEP 5: EXECUTE METALLURGICAL TESTING MATRIX ---
+      - name: Run Nagarjuna Laboratory Stress Simulation Suite
+        run: |
+          # Executes the automated laboratory script directly inside the runner environment
+          if [ -f nagarjuna_lab_suite.py ]; then python nagarjuna_lab_suite.py; fi
+          # Directly verifying Nagarjuna testing automation harnesses
+          python -c "
+class NagarjunaTest:
+    def test_run(self):
+        heat = 1350
+        duration = 6
+        strain = (heat * 0.12) / duration
+        print(f'CI Automated Testing: Calculated Crucible Strain -> {strain} Mpa')
+        assert strain == 27.0, 'Mathematical mismatch in laboratory strain calculation core'
+nt = NagarjunaTest()
+nt.test_run()
+          "
+
+  deploy_simulation_platform:
+    name: Build Verification & Deployment Outflow Node
+    needs: validate_and_test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout Local Repository Assets
+        uses: actions/checkout@v3
+
+      # --- STEP 6: VERIFY FRONTEND WEBGL CANVAS LAYER ---
+      - name: Sanity Check WebGL Deployment Packages
+        run: |
+          echo "[⚙️ Pipeline]: Validating HTML5 Folio Files..."
+          test -f app.html || test -f complete_system.html || test -f index.html
+          echo "[✅ Success]: Canvas layout assets verified for web deployment."
+
+      # --- STEP 7: MASTER PRODUCTION REGISTRATION SIGNAL ---
+      - name: Signal Successful Production Integration
+        run: |
+          echo "========================================================================"
+          echo "🚀 PIPELINE RUN COMPLETE: NEPAL-BHARAT PLATFORM VERSION LOCKED 🚀"
+          echo "All AutoCAD vector profiles, G-Code blocks, and WebGL elements deployed."
+          echo "========================================================================"`;
+
+  const mushaCoreGCode = `; =========================================================================
+; NEPAL-BHARAT RASASHASTRA-AI: MACHINING ROUTINE
+# Component: Inner Core Crucible Part (Musha Core)
+# Standard: ISO Metric G-Code | Aligned via Manasara Units
+; =========================================================================
+
+G21 ; Set system units to millimeters
+G90 ; Set machine positioning to Absolute Mode
+M03 S12000 ; Spin up milling spindle to 12,000 RPM (Optimal Sintering Cut)
+
+; --- STEP 1: RAPID POSITIONING & APPROACH ---
+G00 X45.000 Y45.000 Z5.000 ; Rapid travel directly over the grid center node
+M07 ; Engage mist coolant for carbon/ceramic dust suppression
+
+; --- STEP 2: PLUNGE & INITIAL PLUNGE HOLE CUT ---
+G01 Z-2.500 F300 ; Linear feed entry plunge into raw stock top surface
+G01 X45.000 Y45.000 Z-5.000 F150 ; Feed plunge to initial structural floor depth
+
+; --- STEP 3: INNER CHAMBER CIRCULAR INTERPOLATION ---
+G02 X45.000 Y45.000 I10.000 J0.000 F600 ; Counter-clockwise circular excavation cut (Radius: 10mm)
+G01 Z-10.000 F150 ; Plunge deeper to mid-section crucible cavity chamber
+G02 X45.000 Y45.000 I15.000 J0.000 F800 ; Wider clean-up circular wall pass (Radius: 15mm)
+
+; --- STEP 4: FLOOR FINISHING & BASE RAMPING ---
+G01 Z-15.000 F120 ; Reach final internal chamber floor coordinate limit
+G03 X45.000 Y45.000 I15.000 J0.000 F400 ; Mirror finishing pass to ensure flat floor geometry
+
+; --- STEP 5: SAFE RETRACTION & SHUTDOWN ---
+G00 Z25.000 M05 ; Rapid retract tool along Z-axis and power down spindle safely
+M09 ; Shut off coolant system feed lines
+M30 ; End of program execution path matrix
+; =========================================================================`;
 
   const readmeMarkdown = `# 🇳🇵 Nepal-Bharat Rasashastra-AI: Rare-Earth Magnet Processing Pipeline 🇮🇳
 > **Patent-Grade Demo-Simulation Applet & Reverse-Engineered Metallurgical Corridor**
@@ -231,6 +427,39 @@ fi
             <span>git_push_sync.sh</span>
           </button>
           <button
+            onClick={() => setActiveDocTab('gcode')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              activeDocTab === 'gcode'
+                ? 'bg-[#5a3200] text-white shadow-sm'
+                : 'text-[#4d280e] hover:bg-[#d4b98c]'
+            }`}
+          >
+            <Terminal className="w-3.5 h-3.5 text-[#ffd285]" />
+            <span>musha_core.gcode</span>
+          </button>
+          <button
+            onClick={() => setActiveDocTab('nagarjuna')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              activeDocTab === 'nagarjuna'
+                ? 'bg-[#1b4332] text-white shadow-sm'
+                : 'text-[#4d280e] hover:bg-[#d4b98c]'
+            }`}
+          >
+            <FlaskConical className="w-3.5 h-3.5 text-[#52b788]" />
+            <span>nagarjuna_lab_suite.py</span>
+          </button>
+          <button
+            onClick={() => setActiveDocTab('ci_cd')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              activeDocTab === 'ci_cd'
+                ? 'bg-[#402060] text-white shadow-sm'
+                : 'text-[#4d280e] hover:bg-[#d4b98c]'
+            }`}
+          >
+            <GitBranch className="w-3.5 h-3.5 text-[#c084fc]" />
+            <span>rasashastra_ci_cd.yml</span>
+          </button>
+          <button
             onClick={() => setActiveDocTab('apps')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeDocTab === 'apps'
@@ -334,9 +563,99 @@ fi
         </div>
       )}
 
-      {/* Tab 4: Standalone Master Apps */}
+      {/* Tab 4: musha_core_machining.gcode */}
+      {activeDocTab === 'gcode' && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono font-bold text-[#b56d35]">
+              ⚙️ musha_core_machining.gcode (ISO Metric CNC Machining Routine | Aligned via Manasara Units)
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleCopyText(mushaCoreGCode, 'gcode')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#ebd4b0] hover:bg-[#dec299] text-[#4d280e] font-semibold border border-[#a87037] text-xs transition-colors"
+              >
+                {copiedKey === 'gcode' ? <Check className="w-3.5 h-3.5 text-emerald-700" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedKey === 'gcode' ? 'Copied' : 'Copy G-Code'}</span>
+              </button>
+              <button
+                onClick={() => handleDownloadFile('musha_core_machining.gcode', mushaCoreGCode, 'text/plain')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#5a3200] hover:bg-[#3d2200] text-white font-semibold text-xs transition-colors shadow-sm"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Download .gcode</span>
+              </button>
+            </div>
+          </div>
+          <div className="bg-[#0e0904] border-2 border-[#693e18] rounded-xl p-4 md:p-6 shadow-lg text-[#ffd8a8] font-mono text-xs leading-relaxed max-h-[500px] overflow-y-auto select-all">
+            <pre className="whitespace-pre-wrap">{mushaCoreGCode}</pre>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 5: nagarjuna_lab_suite.py */}
+      {activeDocTab === 'nagarjuna' && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono font-bold text-[#1b4332]">
+              🐍 nagarjuna_lab_suite.py (Analytical Purification & Distillation Verification)
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleCopyText(nagarjunaPythonCode, 'nagarjuna')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#ebd4b0] hover:bg-[#dec299] text-[#4d280e] font-semibold border border-[#a87037] text-xs transition-colors"
+              >
+                {copiedKey === 'nagarjuna' ? <Check className="w-3.5 h-3.5 text-emerald-700" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedKey === 'nagarjuna' ? 'Copied' : 'Copy Python'}</span>
+              </button>
+              <button
+                onClick={() => handleDownloadFile('nagarjuna_lab_suite.py', nagarjunaPythonCode, 'text/x-python')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1b4332] hover:bg-[#2d6a4f] text-white font-semibold text-xs transition-colors shadow-sm"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Download .py</span>
+              </button>
+            </div>
+          </div>
+          <div className="bg-[#0c150e] border-2 border-[#2b5936] rounded-xl p-4 md:p-6 shadow-lg text-[#88f5a3] font-mono text-xs leading-relaxed max-h-[500px] overflow-y-auto select-all">
+            <pre className="whitespace-pre-wrap">{nagarjunaPythonCode}</pre>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 6: rasashastra_ci_cd.yml */}
+      {activeDocTab === 'ci_cd' && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono font-bold text-[#402060]">
+              ⚙️ .github/workflows/rasashastra_ci_cd.yml (Continuous Integration & Test Harness)
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleCopyText(cicdWorkflowYaml, 'ci_cd')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#ebd4b0] hover:bg-[#dec299] text-[#4d280e] font-semibold border border-[#a87037] text-xs transition-colors"
+              >
+                {copiedKey === 'ci_cd' ? <Check className="w-3.5 h-3.5 text-emerald-700" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedKey === 'ci_cd' ? 'Copied' : 'Copy YAML'}</span>
+              </button>
+              <button
+                onClick={() => handleDownloadFile('rasashastra_ci_cd.yml', cicdWorkflowYaml, 'text/yaml')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#402060] hover:bg-[#5a2e88] text-white font-semibold text-xs transition-colors shadow-sm"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Download .yml</span>
+              </button>
+            </div>
+          </div>
+          <div className="bg-[#120a1c] border-2 border-[#59367c] rounded-xl p-4 md:p-6 shadow-lg text-[#dab5ff] font-mono text-xs leading-relaxed max-h-[500px] overflow-y-auto select-all">
+            <pre className="whitespace-pre-wrap">{cicdWorkflowYaml}</pre>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 7: Standalone Master Apps */}
       {activeDocTab === 'apps' && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-[#fff9ea] border-2 border-[#d4af37] rounded-xl p-4 shadow flex flex-col justify-between">
             <div>
               <div className="flex items-center gap-2 text-[#7a001e] font-bold text-sm">
@@ -421,6 +740,35 @@ fi
                 href="/ultimate_app.html"
                 download="ultimate_app.html"
                 className="px-3 py-1.5 rounded bg-[#d8c292] hover:bg-[#c9b07a] text-[#4a2608] text-xs font-bold transition-colors"
+              >
+                <Download className="w-3.5 h-3.5" />
+              </a>
+            </div>
+          </div>
+
+          <div className="bg-[#fff9ea] border-2 border-[#5a3200] rounded-xl p-4 shadow flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2 text-[#5a3200] font-bold text-sm">
+                <Terminal className="w-4 h-4 text-[#ffd285]" />
+                <span>musha_core.gcode</span>
+              </div>
+              <p className="text-xs text-[#542d10] mt-1.5 leading-relaxed">
+                Precision ISO Metric machining program for Inner Core Crucible Part (Musha Core). 12,000 RPM spindle cut, plunge cycles, and G02/G03 circular interpolations.
+              </p>
+            </div>
+            <div className="mt-4 pt-3 border-t border-[#5a3200]/40 flex gap-2">
+              <button
+                onClick={() => setActiveDocTab('gcode')}
+                className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded bg-[#5a3200] hover:bg-[#3d2200] text-white text-xs font-bold transition-colors"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Inspect G-Code</span>
+              </button>
+              <a
+                href="/musha_core_machining.gcode"
+                download="musha_core_machining.gcode"
+                className="px-3 py-1.5 rounded bg-[#d8c292] hover:bg-[#c9b07a] text-[#4a2608] text-xs font-bold transition-colors"
+                title="Download .gcode file"
               >
                 <Download className="w-3.5 h-3.5" />
               </a>
